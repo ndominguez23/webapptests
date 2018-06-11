@@ -2,7 +2,6 @@ import typing
 import io
 import socket
 
-from collections import defaultdict
 from headers import Headers
 
 class BodyReader(io.IOBase):
@@ -31,7 +30,8 @@ class BodyReader(io.IOBase):
 class Request(typing.NamedTuple):
     method: str
     path: str
-    headers: typing.Mapping[str, str]
+    headers: Headers
+    body: BodyReader
 
     @classmethod
     def from_socket(cls, sock: socket.socket) -> "Request":
@@ -40,7 +40,7 @@ class Request(typing.NamedTuple):
         Raises:
          ValueError: When the request cannot be parsed.
         """
-        lines = test.iter_lines(sock)
+        lines = iter_lines(sock)
 
         try:
             request_line = next(lines).decode("ascii")
@@ -52,14 +52,22 @@ class Request(typing.NamedTuple):
         except ValueError:
             raise ValueError(f"Malformed request line {request_line!r}.")
 
-        headers = {}
-        for line in lines:
+        headers = Headers()
+        buff = b""
+        while True:
+            try:
+                line = next(lines)
+            except StopIteration as e:
+                buff = e.value
+                break
+
             try:
                 name, _, value = line.decode("ascii").partition(":")
-                headers[name.lower()] = value.lstrip()
+                headers.add(name, value.lstrip())
             except ValueError:
                 raise ValueError(f"Malformed header line {line!r}.")
 
+        body = BodyReader(sock, buff=buff)
         return cls(method=method.upper(), path=path, headers=headers)
         
 

@@ -1,6 +1,8 @@
 import typing
 import io
 import socket
+import os
+
 from header import Headers
 
 class Response:

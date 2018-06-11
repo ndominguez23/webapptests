@@ -1,6 +1,9 @@
 import typing
 from collections import defaultdict
 
+HeadersDict = typing.Dict[str, typing.List[str]]
+HeadersGenerator = typing.Generator[typing.Tuple[str, str], None, None]
+
 class Headers:
     def __init__(self) -> None:
         self._headers = defaultdict(list)
