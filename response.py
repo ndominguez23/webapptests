@@ -1,6 +1,6 @@
 import typing
 import io
-import request
+import socket
 from header import Headers
 
 class Response:
