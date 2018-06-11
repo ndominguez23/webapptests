@@ -68,7 +68,7 @@ class Request(typing.NamedTuple):
                 raise ValueError(f"Malformed header line {line!r}.")
 
         body = BodyReader(sock, buff=buff)
-        return cls(method=method.upper(), path=path, headers=headers)
+        return cls(method=method.upper(), path=path, headers=headers, body=body)
         
 
 def iter_lines(sock: socket.socket, bufsize: int = 16_384) -> typing.Generator[bytes, None, bytes]:

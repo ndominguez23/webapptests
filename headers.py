@@ -21,6 +21,6 @@ class Headers:
             return default
 
     def __iter__(self) -> HeadersGenerator:
-        for name, values in self._header.items():
+        for name, values in self._headers.items():
             for value in values:
                 yield name, value
